@@ -1,5 +1,5 @@
-# See https://github.com/docker-library/php/blob/4677ca134fe48d20c820a19becb99198824d78e3/7.0/fpm/Dockerfile
 FROM php:7.1-fpm
+
 MAINTAINER Ralf Junghanns <ralf.junghanns@gmail.com>
 
 RUN buildDeps="libfreetype6-dev libjpeg-dev libmcrypt-dev libpq-dev libpng12-dev zlib1g-dev libzip-dev libicu-dev" && \
@@ -12,8 +12,7 @@ RUN buildDeps="libfreetype6-dev libjpeg-dev libmcrypt-dev libpq-dev libpng12-dev
         pdo \
         pdo_pgsql \
         pgsql \
-        sockets \
-        intl
+        bcmath
 
 RUN geosBuildDeps="wget autoconf make automake build-essential libtool" && \
     apt-get update && \
@@ -31,3 +30,16 @@ RUN wget https://github.com/libgeos/php-geos/archive/1.0.0.tar.gz
 RUN tar zxf 1.0.0.tar.gz
 RUN cd php-geos-1.0.0 && ./autogen.sh && ./configure && make && mv modules/geos.so $(php-config --extension-dir)
 RUN docker-php-ext-enable geos
+
+# Install Composer
+RUN curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+RUN composer --version
+
+# Set timezone
+RUN rm /etc/localtime
+RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN "date"
+
+RUN echo 'alias cs="php bin/console"' >> ~/.bashrc
+
+WORKDIR /var/www/symfony
