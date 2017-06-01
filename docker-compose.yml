@@ -1,23 +1,35 @@
 version: '2'
 
 services:
+    rabbitmq:
+        container_name: rabbitmq
+        build: rabbitmq
+        environment:
+          - RABBITMQ_ERLANG_COOKIE='secret_cookie'
+        ports:
+          - "15672:15672"
+          - "5672:5672"
+        tty: true
     postgis:
-        restart: always
+        container_name: postgis
         build: postgis
+        restart: always
         volumes:
             - "./.data/db:/var/lib/postgresql"
-        ports:
-            - 5432:5432
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
     php:
+        container_name: php
         build: php7-fpm
         volumes:
             - ${SYMFONY_APP_PATH}:/var/www/symfony
             - ./logs/symfony:/var/www/symfony/app/logs
+        links:
+           - postgis
     nginx:
+        container_name: nginx
         build: nginx
         ports:
             - 80:80
