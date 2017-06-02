@@ -25,6 +25,7 @@ services:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
+
     php:
         container_name: php
         build: php7-fpm
@@ -45,14 +46,6 @@ services:
           - ${SYMFONY_APP_PATH}:/var/www/symfony
           - ./scripts:/app
         command: php /var/www/symfony/bin/console inowas:calculation:listener -vvv
-
-    composer:
-        container_name: composer
-        restart: 'no'
-        image: composer/composer:php7
-        command: install
-        volumes:
-          - ${SYMFONY_APP_PATH}:/var/www/symfony
 
     nginx:
         container_name: nginx

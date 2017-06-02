@@ -34,6 +34,10 @@ RUN apt-get install -y libpq-dev
 RUN docker-php-ext-install pgsql
 RUN docker-php-ext-install pdo_pgsql
 
+# Install zip and git functionality
+RUN apt-get install -y git zlib1g-dev
+RUN docker-php-ext-install zip
+
 # CleanUp
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
 
