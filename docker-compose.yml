@@ -47,6 +47,7 @@ services:
         command: php /var/www/symfony/bin/console inowas:calculation:listener -vvv
 
     composer:
+        container_name: composer
         restart: 'no'
         image: composer/composer:php7
         command: install
@@ -64,6 +65,7 @@ services:
             - ./logs/nginx/:/var/log/nginx
 
     modflow:
+        container_name: composer
         build: modflow
         entrypoint:
           - /app/wait_for_rabbitmq.sh
