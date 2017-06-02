@@ -65,7 +65,7 @@ services:
             - ./logs/nginx/:/var/log/nginx
 
     modflow:
-        container_name: composer
+        container_name: modflow
         build: modflow
         entrypoint:
           - /app/wait_for_rabbitmq.sh
