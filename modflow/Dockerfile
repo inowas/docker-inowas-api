@@ -10,3 +10,7 @@ RUN buildDeps="python3 python3-dev python3-pip python3-matplotlib python3-numpy 
     pip3 install flopy && \
     pip3 install sklearn && \
     pip3 install pika
+
+RUN apt-get update && apt-get install -y netcat --no-install-recommends
+
+WORKDIR /var/pymodelling

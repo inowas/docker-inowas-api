@@ -3,19 +3,24 @@ version: '2'
 services:
     rabbitmq:
         container_name: rabbitmq
-        build: rabbitmq
+        image: rabbitmq:3-management
         environment:
-          - RABBITMQ_ERLANG_COOKIE='secret_cookie'
+            RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
+            RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
+            RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
+        volumes:
+            - ./rabbitmq:/start
+        command: /start/init.sh
         ports:
           - "15672:15672"
           - "5672:5672"
-        tty: true
+          - "5671:5671"
     postgis:
         container_name: postgis
         build: postgis
         restart: always
         volumes:
-            - "./.data/db:/var/lib/postgresql"
+            - data-postgis:/var/lib/postgresql
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -28,6 +33,19 @@ services:
             - ./logs/symfony:/var/www/symfony/app/logs
         links:
            - postgis
+
+    # amqp-listener on application
+    php-cli:
+        container_name: php-cli
+        build: php7-cli
+        restart: always
+        entrypoint:
+          - /app/wait_for_rabbitmq.sh
+        volumes:
+          - ${SYMFONY_APP_PATH}:/var/www/symfony
+          - ./scripts:/app
+        command: php /var/www/symfony/bin/console inowas:calculation:listener -vvv
+
     nginx:
         container_name: nginx
         build: nginx
@@ -40,3 +58,18 @@ services:
 
     modflow:
         build: modflow
+        entrypoint:
+          - /app/wait_for_rabbitmq.sh
+        environment:
+            RABBITMQ_USER: ${RABBITMQ_USER}
+            RABBITMQ_PASS: ${RABBITMQ_PASS}
+            RABBITMQ_VHOST: ${RABBITMQ_VHOST}
+        volumes:
+            - ${PYMODELLING_APP_PATH}:/var/pymodelling
+            - ./scripts:/app
+            - ./mfdata:/data
+        command: ./process_runner.sh /data ${RABBITMQ_HOST} ${RABBITMQ_PORT} ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS}
+
+volumes:
+    data-postgis:
+        driver: local
