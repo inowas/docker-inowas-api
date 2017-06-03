@@ -57,20 +57,29 @@ services:
         volumes:
             - ./logs/nginx/:/var/log/nginx
 
-    modflow:
-        container_name: modflow
+    modflow-calculation:
+        restart: always
+        container_name: modflow-calculation
         build: modflow
         entrypoint:
           - /app/wait_for_rabbitmq.sh
-        environment:
-            RABBITMQ_USER: ${RABBITMQ_USER}
-            RABBITMQ_PASS: ${RABBITMQ_PASS}
-            RABBITMQ_VHOST: ${RABBITMQ_VHOST}
         volumes:
-            - ${PYMODELLING_APP_PATH}:/var/pymodelling
+            - ${PYMODELLING_APP_PATH}:/pymodelling
             - ./scripts:/app
             - ./mfdata:/data
-        command: ./process_runner.sh /data ${RABBITMQ_HOST} ${RABBITMQ_PORT} ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS}
+        command: /pymodelling/inowas_flopy_calculation_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${CALCULATION_QUEUE}
+
+    modflow-read-data:
+        restart: always
+        container_name: modflow-read-data
+        build: modflow
+        entrypoint:
+          - /app/wait_for_rabbitmq.sh
+        volumes:
+            - ${PYMODELLING_APP_PATH}:/pymodelling
+            - ./scripts:/app
+            - ./mfdata:/data:ro
+        command: /pymodelling/inowas_flopy_readdata_rpc_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${READ_DATA_QUEUE}
 
 volumes:
     data-postgis:
