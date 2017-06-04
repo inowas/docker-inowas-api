@@ -64,9 +64,9 @@ services:
         entrypoint:
           - /app/wait_for_rabbitmq.sh
         volumes:
+            - ${MODFLOW_DATA_FOLDER}:/data
             - ${PYMODELLING_APP_PATH}:/pymodelling
             - ./scripts:/app
-            - ./mfdata:/data
         command: /pymodelling/inowas_flopy_calculation_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${CALCULATION_QUEUE}
 
     modflow-read-data:
@@ -76,9 +76,9 @@ services:
         entrypoint:
           - /app/wait_for_rabbitmq.sh
         volumes:
+            - ${MODFLOW_DATA_FOLDER}:/data:ro
             - ${PYMODELLING_APP_PATH}:/pymodelling
             - ./scripts:/app
-            - ./mfdata:/data:ro
         command: /pymodelling/inowas_flopy_readdata_rpc_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${READ_DATA_QUEUE}
 
 volumes:
