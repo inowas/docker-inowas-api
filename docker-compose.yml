@@ -11,10 +11,10 @@ services:
         volumes:
             - ./rabbitmq:/start
         command: /start/init.sh
-        ports:
-          - "15672:15672"
-          - "5672:5672"
-          - "5671:5671"
+#        ports:
+#          - "15672:15672"
+#          - "5672:5672"
+#          - "5671:5671"
     postgis:
         container_name: postgis
         build: postgis
