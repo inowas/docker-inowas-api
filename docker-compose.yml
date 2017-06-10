@@ -25,13 +25,15 @@ services:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
+        ports:
+          - "5432:5432"
 
     php:
         container_name: php
         build: php7-fpm
         volumes:
             - ${SYMFONY_APP_PATH}:/var/www/symfony
-            - ./logs/symfony:/var/www/symfony/app/logs
+            - ./logs/symfony:/var/www/symfony/var/logs
         links:
            - postgis
 
@@ -45,17 +47,27 @@ services:
         volumes:
           - ${SYMFONY_APP_PATH}:/var/www/symfony
           - ./scripts:/app
-        command: php /var/www/symfony/bin/console inowas:calculation:listener -vvv
+        command: php /var/www/symfony/bin/console inowas:calculation:listener -v
 
     nginx:
         container_name: nginx
         build: nginx
-        ports:
-            - 8001:80
         volumes_from:
             - php
         volumes:
             - ./logs/nginx/:/var/log/nginx
+
+    varnish:
+        container_name: varnish
+        build: varnish
+        restart: always
+        ports:
+            - 8001:80
+        environment:
+            WEBSERVER: "nginx"
+            WEBSERVER_PORT: "80"
+        links:
+            - nginx
 
     modflow-calculation:
         restart: always
