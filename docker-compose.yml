@@ -93,6 +93,18 @@ services:
             - ./scripts:/app
         command: /pymodelling/inowas_flopy_readdata_rpc_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${READ_DATA_QUEUE}
 
+    modflow-interpolation:
+        restart: always
+        container_name: modflow-interpolation
+        build: modflow
+        entrypoint:
+          - /app/wait_for_rabbitmq.sh
+        volumes:
+            - ${MODFLOW_DATA_FOLDER}:/data:ro
+            - ${PYMODELLING_APP_PATH}:/pymodelling
+            - ./scripts:/app
+        command: /pymodelling/inowas_flopy_interpolation_rpc_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${INTERPOLATION_QUEUE}
+
 volumes:
     data-postgis:
         driver: local
