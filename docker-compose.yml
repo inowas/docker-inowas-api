@@ -36,6 +36,7 @@ services:
             - ./logs/symfony:/var/www/symfony/var/logs
         links:
            - postgis
+           - rabbitmq
 
     # amqp-listener on application
     php-cli:
@@ -48,6 +49,8 @@ services:
           - ${SYMFONY_APP_PATH}:/var/www/symfony
           - ./scripts:/app
         command: php /var/www/symfony/bin/console inowas:calculation:listener -v
+        links:
+          - rabbitmq
 
     nginx:
         container_name: nginx
@@ -80,6 +83,8 @@ services:
             - ${PYMODELLING_APP_PATH}:/pymodelling
             - ./scripts:/app
         command: /pymodelling/inowas_flopy_calculation_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${CALCULATION_QUEUE}
+        links:
+          - rabbitmq
 
     modflow-read-data:
         restart: always
@@ -92,6 +97,8 @@ services:
             - ${PYMODELLING_APP_PATH}:/pymodelling
             - ./scripts:/app
         command: /pymodelling/inowas_flopy_readdata_rpc_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${READ_DATA_QUEUE}
+        links:
+          - rabbitmq
 
     modflow-interpolation:
         restart: always
@@ -104,6 +111,8 @@ services:
             - ${PYMODELLING_APP_PATH}:/pymodelling
             - ./scripts:/app
         command: /pymodelling/inowas_flopy_interpolation_rpc_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${INTERPOLATION_QUEUE}
+        links:
+          - rabbitmq
 
 volumes:
     data-postgis:
