@@ -16,7 +16,7 @@ services:
           - "5672:5672"
           - "5671:5671"
     postgis:
-q        container_name: postgis
+        container_name: postgis
         build: postgis
         restart: always
         volumes:
