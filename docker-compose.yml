@@ -33,6 +33,7 @@ services:
         build: php7-fpm
         volumes:
             - ${SYMFONY_APP_PATH}:/var/www/symfony
+            - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
             - ./logs/symfony:/var/www/symfony/var/logs
         links:
            - postgis
