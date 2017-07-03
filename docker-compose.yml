@@ -2,7 +2,6 @@ version: '2'
 
 services:
     rabbitmq:
-        container_name: rabbitmq
         image: rabbitmq:3-management
         environment:
             RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
@@ -16,7 +15,6 @@ services:
 #          - "5672:5672"
 #          - "5671:5671"
     postgis:
-        container_name: postgis
         build: postgis
         restart: always
         volumes:
@@ -29,7 +27,6 @@ services:
 #          - "5432:5432"
 
     php:
-        container_name: php
         build: php7-fpm
         volumes:
             - ${SYMFONY_APP_PATH}:/var/www/symfony
@@ -41,7 +38,6 @@ services:
 
     # amqp-listener on application
     php-cli:
-        container_name: php-cli
         build: php7-cli
         restart: always
         entrypoint:
@@ -55,7 +51,6 @@ services:
           - postgis
 
     nginx:
-        container_name: nginx
         build: nginx
         volumes_from:
             - php
@@ -63,11 +58,10 @@ services:
             - ./logs/nginx/:/var/log/nginx
 
     varnish:
-        container_name: varnish
         build: varnish
         restart: always
         ports:
-            - 8001:80
+            - ${HTTP_PORT}:80
         environment:
             WEBSERVER: "nginx"
             WEBSERVER_PORT: "80"
@@ -75,9 +69,8 @@ services:
             - nginx
 
     modflow-calculation:
-        restart: always
-        container_name: modflow-calculation
         build: modflow
+        restart: always
         entrypoint:
           - /app/wait_for_rabbitmq.sh
         volumes:
@@ -90,7 +83,6 @@ services:
 
     modflow-read-data:
         restart: always
-        container_name: modflow-read-data
         build: modflow
         entrypoint:
           - /app/wait_for_rabbitmq.sh
@@ -104,7 +96,6 @@ services:
 
     modflow-interpolation:
         restart: always
-        container_name: modflow-interpolation
         build: modflow
         entrypoint:
           - /app/wait_for_rabbitmq.sh
