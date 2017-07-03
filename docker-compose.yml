@@ -52,6 +52,7 @@ services:
         command: php /var/www/symfony/bin/console inowas:calculation:listener -v
         links:
           - rabbitmq
+          - postgis
 
     nginx:
         container_name: nginx
