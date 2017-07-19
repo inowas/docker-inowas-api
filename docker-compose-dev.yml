@@ -1,0 +1,45 @@
+version: '2'
+
+services:
+    rabbitmq:
+        restart: "no"
+        ports:
+          - "15672:15672"
+          - "5672:5672"
+          - "5671:5671"
+
+    postgis:
+        restart: "no"
+        ports:
+          - "5432:5432"
+
+    php:
+        restart: "no"
+        env_file:
+            - ./.env
+
+    # amqp-listener on application
+    php-cli:
+        restart: "no"
+        env_file:
+            - ./.env
+
+    nginx:
+        restart: "no"
+        build: nginx
+        volumes_from:
+            - php
+        volumes:
+            - ./logs/nginx/:/var/log/nginx
+
+    varnish:
+        restart: "no"
+
+    modflow-calculation:
+        restart: "no"
+
+    modflow-read-data:
+        restart: "no"
+
+    modflow-interpolation:
+        restart: "no"

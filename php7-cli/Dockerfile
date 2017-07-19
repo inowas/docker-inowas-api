@@ -36,4 +36,8 @@ RUN "date"
 
 RUN echo 'alias cs="php bin/console"' >> ~/.bashrc
 
+RUN pecl install xdebug
+
+COPY xdebug-cli.ini $PHP_INI_DIR/conf.d/
+
 WORKDIR /var/www/symfony
