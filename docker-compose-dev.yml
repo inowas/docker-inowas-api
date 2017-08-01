@@ -1,4 +1,4 @@
-version: '2'
+version: "2.1"
 
 services:
     rabbitmq:
@@ -34,6 +34,8 @@ services:
 
     varnish:
         restart: "no"
+        ports:
+            - ${HTTP_PORT}:80
 
     modflow-calculation:
         restart: "no"
@@ -43,3 +45,15 @@ services:
 
     modflow-interpolation:
         restart: "no"
+
+#    blackfire:
+#        image: prooph/php:7.1-cli-blackfire
+#        volumes:
+#            - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
+#            - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data:consistent
+#            - ./logs/symfony:/var/www/symfony/var/logs
+#        environment:
+#            - BLACKFIRE_CLIENT_ID=${BLACKFIRE_CLIENT_ID}
+#            - BLACKFIRE_CLIENT_TOKEN=${BLACKFIRE_CLIENT_TOKEN}
+#            - BLACKFIRE_SERVER_ID=${BLACKFIRE_SERVER_ID}
+#            - BLACKFIRE_SERVER_TOKEN=${BLACKFIRE_SERVER_TOKEN}
