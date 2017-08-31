@@ -68,6 +68,7 @@ RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
 RUN "date"
 
 RUN echo 'alias cs="php bin/console"' >> ~/.bashrc
+RUN echo 'alias cscc="php bin/console cache:clear --env=prod && php bin/console cache:clear --env=dev && php bin/console cache:clear --env=test"' >> ~/.bashrc
 
 RUN pecl install xdebug
 
