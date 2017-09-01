@@ -24,15 +24,15 @@ services:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
-        ports:
-          - "5432:5432"
+#        ports:
+#          - "5432:5432"
 
     php:
         restart: always
         build: php7-fpm
         volumes:
-            - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
-            - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data:consistent
+            - ${SYMFONY_APP_PATH}:/var/www/symfony
+            - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
             - ./logs/php:/var/www/symfony/var/logs
         environment:
             XDEBUG_CONFIG: ${XDEBUG_CONFIG}
@@ -45,7 +45,7 @@ services:
         entrypoint:
           - /app/wait_for_rabbitmq.sh
         volumes:
-          - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
+          - ${SYMFONY_APP_PATH}:/var/www/symfony
           - ./scripts:/app
         environment:
           XDEBUG_CONFIG: ${XDEBUG_CONFIG}
@@ -59,8 +59,8 @@ services:
         entrypoint:
           - /app/wait_for_rabbitmq.sh
         volumes:
-          - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
-          - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data:consistent
+          - ${SYMFONY_APP_PATH}:/var/www/symfony
+          - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
           - ./scripts:/app
         environment:
           XDEBUG_CONFIG: ${XDEBUG_CONFIG}
