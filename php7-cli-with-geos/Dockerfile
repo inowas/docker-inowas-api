@@ -2,7 +2,7 @@ FROM php:latest
 
 MAINTAINER Ralf Junghanns <ralf.junghanns@gmail.com>
 
-RUN buildDeps="netcat" && \
+RUN buildDeps="netcat git zlib1g-dev" && \
     apt-get update && \
     apt-get install -y $buildDeps --no-install-recommends && \
     apt-get clean && \
@@ -23,7 +23,6 @@ RUN docker-php-ext-install pgsql
 RUN docker-php-ext-install pdo_pgsql
 
 # Install zip and git functionality
-RUN apt-get install -y git zlib1g-dev
 RUN docker-php-ext-install zip
 
 # CleanUp
