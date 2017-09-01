@@ -62,7 +62,6 @@ services:
           - ${SYMFONY_APP_PATH}:/var/www/symfony:cached
           - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data:consistent
           - ./scripts:/app
-          - ./logs/php:/var/www/symfony/var/logs
         environment:
           XDEBUG_CONFIG: ${XDEBUG_CONFIG}
           PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
