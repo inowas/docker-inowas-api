@@ -69,6 +69,7 @@ services:
 
     nginx:
         build: nginx
+        restart: always
         volumes_from:
             - php
         volumes:
