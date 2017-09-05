@@ -64,14 +64,19 @@ RUN composer --version
 
 # Set timezone
 RUN rm /etc/localtime
-RUN ln -s /usr/share/zoneinfo/Europe/Paris /etc/localtime
+RUN ln -s /usr/share/zoneinfo/Europe/Berlin /etc/localtime
 RUN "date"
+
+COPY config/php.ini $PHP_INI_DIR/
+COPY config/opcache.ini $PHP_INI_DIR/conf.d/
+COPY config/fpm/php-fpm.conf /usr/local/etc/
+COPY config/fpm/pool.d /usr/local/etc/pool.d
+
+RUN docker-php-ext-configure opcache --enable-opcache \
+    && docker-php-ext-install \
+        opcache
 
 RUN echo 'alias cs="php bin/console"' >> ~/.bashrc
 RUN echo 'alias cscc="php bin/console cache:clear --env=prod && php bin/console cache:clear --env=dev && php bin/console cache:clear --env=test"' >> ~/.bashrc
-
-RUN pecl install xdebug
-
-COPY xdebug.ini $PHP_INI_DIR/conf.d/
 
 WORKDIR /var/www/symfony
