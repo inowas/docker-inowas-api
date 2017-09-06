@@ -3,6 +3,7 @@ version: "2.1"
 services:
     rabbitmq:
         image: rabbitmq:3-management
+        restart: always
         environment:
             RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
             RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
@@ -70,21 +71,23 @@ services:
     nginx:
         build: nginx
         restart: always
+        ports:
+            - ${HTTP_PORT}:80
         volumes_from:
             - php
         volumes:
             - ./logs/nginx/:/var/log/nginx
 
-    varnish:
-        build: varnish
-        restart: always
-        ports:
-            - ${HTTP_PORT}:80
-        environment:
-            WEBSERVER: "nginx"
-            WEBSERVER_PORT: "80"
-        depends_on:
-            - nginx
+#    varnish:
+#        build: varnish
+#        restart: always
+#        ports:
+#            - ${HTTP_PORT}:80
+#        environment:
+#            WEBSERVER: "nginx"
+#            WEBSERVER_PORT: "80"
+#        depends_on:
+#            - nginx
 
     modflow-calculation:
         build: modflow
