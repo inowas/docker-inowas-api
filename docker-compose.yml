@@ -9,6 +9,7 @@ services:
             RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASS}
             RABBITMQ_DEFAULT_VHOST: ${RABBITMQ_VHOST}
         volumes:
+            - rabbitmq-data:/var/lib/rabbitmq
             - ./rabbitmq:/start
         command: /start/init.sh
 #        ports:
@@ -20,7 +21,7 @@ services:
         build: postgis
         restart: always
         volumes:
-            - data-postgis:/var/lib/postgresql
+            - postgis-data:/var/lib/postgresql/data
         environment:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
@@ -129,5 +130,7 @@ services:
           - rabbitmq
 
 volumes:
-    data-postgis:
+    postgis-data:
+        driver: local
+    rabbitmq-data:
         driver: local
