@@ -26,8 +26,8 @@ services:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
-#        ports:
-#          - "5432:5432"
+        ports:
+          - "5432:5432"
 
     php:
         restart: always
@@ -126,6 +126,19 @@ services:
             - ${PYMODELLING_APP_PATH}:/pymodelling
             - ./scripts:/app
         command: /pymodelling/inowas_flopy_interpolation_rpc_server /data rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${INTERPOLATION_QUEUE}
+        links:
+          - rabbitmq
+
+    geoprocessing:
+        restart: always
+        build: geoprocessing
+        entrypoint:
+          - /app/wait_for_rabbitmq.sh
+        volumes:
+            - ${MODFLOW_DATA_FOLDER}:/data:ro
+            - ${PYMODELLING_APP_PATH}:/pymodelling
+            - ./scripts:/app
+        command: /pymodelling/inowas_geo_processing_rpc_server /data/raster rabbitmq 5672 ${RABBITMQ_VHOST} ${RABBITMQ_USER} ${RABBITMQ_PASS} ${GEO_PROCESSING_QUEUE}
         links:
           - rabbitmq
 
