@@ -24,6 +24,10 @@ services:
         env_file:
             - ./.env
 
+    # tools projector
+    tools-projector:
+        restart: "no"
+
     nginx:
         restart: "no"
         build: nginx

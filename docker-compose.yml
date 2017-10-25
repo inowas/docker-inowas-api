@@ -54,6 +54,14 @@ services:
           PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
         command: php /var/www/symfony/bin/console inowas:calculation:listener
 
+    # tools projector
+    tools-projector:
+        build: php7-cli
+        restart: always
+        volumes:
+          - ${SYMFONY_APP_PATH}:/var/www/symfony
+        command: php /var/www/symfony/bin/console inowas:projector:run tool -l
+
     # amqp-listener on application
     php-cli-with-geos:
         build: php7-cli-with-geos
