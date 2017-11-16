@@ -2,6 +2,8 @@ FROM php:latest
 
 MAINTAINER Ralf Junghanns <ralf.junghanns@gmail.com>
 
+ARG PHP_INI_DIR=/usr/local/etc/php
+
 RUN buildDeps="netcat git zlib1g-dev" && \
     apt-get update && \
     apt-get install -y $buildDeps --no-install-recommends && \
