@@ -36,9 +36,9 @@ services:
             - ${SYMFONY_APP_PATH}:/var/www/symfony
             - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
             - ./logs/php:/var/www/symfony/var/logs
-        environment:
-            XDEBUG_CONFIG: ${XDEBUG_CONFIG}
-            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+#        environment:
+#            XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+#            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
 
     # amqp-listener on application
     php-cli:
@@ -49,9 +49,9 @@ services:
         volumes:
           - ${SYMFONY_APP_PATH}:/var/www/symfony
           - ./scripts:/app
-        environment:
-          XDEBUG_CONFIG: ${XDEBUG_CONFIG}
-          PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+#        environment:
+#          XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+#          PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
         command: php /var/www/symfony/bin/console inowas:calculation:listener
 
     # tools projector
@@ -72,9 +72,9 @@ services:
           - ${SYMFONY_APP_PATH}:/var/www/symfony
           - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
           - ./scripts:/app
-        environment:
-          XDEBUG_CONFIG: ${XDEBUG_CONFIG}
-          PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
+#        environment:
+#          XDEBUG_CONFIG: ${XDEBUG_CONFIG}
+#          PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
         command: php /var/www/symfony/bin/console inowas:calculation:request:listener
 
     nginx:
