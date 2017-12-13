@@ -1,0 +1,8 @@
+version: "2.1"
+
+services:
+    app:
+        build: ${APP_PATH}
+        restart: always
+        ports:
+            - ${APP_HTTP_PORT}:5000

@@ -12,10 +12,6 @@ services:
             - rabbitmq-data:/var/lib/rabbitmq
             - ./rabbitmq:/start
         command: /start/init.sh
-#        ports:
-#          - "15672:15672"
-#          - "5672:5672"
-#          - "5671:5671"
 
     postgis:
         build: postgis
@@ -33,12 +29,9 @@ services:
         restart: always
         build: php7-fpm
         volumes:
-            - ${SYMFONY_APP_PATH}:/var/www/symfony
+            - ${API_PATH}:/var/www/symfony
             - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
             - ./logs/php:/var/www/symfony/var/logs
-#        environment:
-#            XDEBUG_CONFIG: ${XDEBUG_CONFIG}
-#            PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
 
     # amqp-listener on application
     php-cli:
@@ -47,11 +40,8 @@ services:
         entrypoint:
           - /app/wait_for_rabbitmq.sh
         volumes:
-          - ${SYMFONY_APP_PATH}:/var/www/symfony
+          - ${API_PATH}:/var/www/symfony
           - ./scripts:/app
-#        environment:
-#          XDEBUG_CONFIG: ${XDEBUG_CONFIG}
-#          PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
         command: php /var/www/symfony/bin/console inowas:calculation:listener
 
     # tools projector
@@ -59,7 +49,7 @@ services:
         build: php7-cli
         restart: always
         volumes:
-          - ${SYMFONY_APP_PATH}:/var/www/symfony
+          - ${APP_PATH}:/var/www/symfony
         command: php /var/www/symfony/bin/console inowas:projector:run tool -l
 
     # amqp-listener on application
@@ -69,34 +59,24 @@ services:
         entrypoint:
           - /app/wait_for_rabbitmq.sh
         volumes:
-          - ${SYMFONY_APP_PATH}:/var/www/symfony
+          - ${API_PATH}:/var/www/symfony
           - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
           - ./scripts:/app
-#        environment:
-#          XDEBUG_CONFIG: ${XDEBUG_CONFIG}
-#          PHP_IDE_CONFIG: ${PHP_IDE_CONFIG}
         command: php /var/www/symfony/bin/console inowas:calculation:request:listener
 
     nginx:
         build: nginx
         restart: always
         ports:
-            - ${HTTP_PORT}:80
+            - ${API_HTTP_PORT}:80
         volumes_from:
             - php
-        volumes:
-            - ./logs/nginx/:/var/log/nginx
 
-#    varnish:
-#        build: varnish
-#        restart: always
-#        ports:
-#            - ${HTTP_PORT}:80
-#        environment:
-#            WEBSERVER: "nginx"
-#            WEBSERVER_PORT: "80"
-#        depends_on:
-#            - nginx
+    app:
+        build: ${APP_PATH}
+        restart: always
+        ports:
+            - ${APP_HTTP_PORT}:5000
 
     modflow-calculation:
         build: modflow
