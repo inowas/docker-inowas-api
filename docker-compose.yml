@@ -47,7 +47,7 @@ services:
         build: php7-cli
         restart: always
         volumes:
-          - ${APP_PATH}:/var/www/symfony
+          - ${API_PATH}:/var/www/symfony
         command: php /var/www/symfony/bin/console inowas:projector:run tool -l
 
     # amqp-listener on application
