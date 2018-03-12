@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-cd ../app && git pull && cd ../docker
-cd ../api && git pull && cd ../docker
+cd ../app && git pull && git submodule update && cd ../docker
+cd ../api && git pull && git submodule update && cd ../docker
 
 #docker-compose stop app
 docker-compose down
