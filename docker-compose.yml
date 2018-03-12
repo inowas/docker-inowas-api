@@ -2,7 +2,7 @@ version: "2.1"
 
 services:
     rabbitmq:
-        image: rabbitmq:3-management
+        image: rabbitmq:3.6-management
         restart: always
         environment:
             RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER}
