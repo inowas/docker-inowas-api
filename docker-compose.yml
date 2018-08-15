@@ -22,6 +22,8 @@ services:
             POSTGRES_USER: ${POSTGRES_USER}
             POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
             POSTGRES_DB: ${POSTGRES_DB}
+        ports:
+            - "5432:5432"
 
     php:
         image: inowas/docker-php7-fpm-with-geos
@@ -41,26 +43,6 @@ services:
           - ${API_PATH}:/var/www/symfony
           - ./scripts:/app
         command: php /var/www/symfony/bin/console inowas:calculation:listener
-
-    # tools projector
-    tools-projector:
-        image: inowas/docker-php7-cli
-        restart: always
-        volumes:
-          - ${API_PATH}:/var/www/symfony
-        command: php /var/www/symfony/bin/console inowas:projector:run tool -l
-
-    # amqp-listener on application
-    php-cli-with-geos:
-        image: inowas/docker-php7-cli-with-geos
-        restart: always
-        entrypoint:
-          - /app/wait_for_rabbitmq.sh
-        volumes:
-          - ${API_PATH}:/var/www/symfony
-          - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
-          - ./scripts:/app
-        command: php /var/www/symfony/bin/console inowas:calculation:request:listener
 
     nginx:
         image: inowas/docker-nginx

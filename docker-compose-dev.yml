@@ -24,14 +24,6 @@ services:
         env_file:
             - ./.env
 
-    # tools projector
-    tools-projector:
-        restart: "no"
-
-    # amqp-listener on application
-    php-cli-with-geos:
-        restart: "no"
-
     nginx:
         restart: "no"
 
