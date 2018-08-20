@@ -19,10 +19,16 @@ services:
             - ./.env
 
     # amqp-listener on application
-    php-cli:
+    calculation-preprocessor:
+        restart: "no"
+
+    calculation-results-listener:
         restart: "no"
         env_file:
             - ./.env
+
+    optimization-progress-listener:
+        restart: "no"
 
     nginx:
         restart: "no"
