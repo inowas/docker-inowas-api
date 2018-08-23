@@ -80,75 +80,72 @@ services:
     - ${APP_HTTP_PORT}:5000
 
   modflow-calculation:
-    image: inowas/docker-modflow
+    image: inowas/pymodelling:latest
     restart: always
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - ${MODFLOW_DATA_FOLDER}:/data
-    - ${PYMODELLING_APP_PATH}:/pymodelling
     - ./scripts:/app
-    command: /usr/bin/python3 -u /pymodelling/inowas.flopy.calculation.server.py /data
+    command: python -u /pymodelling/inowas.flopy.calculation.server.py /data
     env_file:
     - ./.env
     links:
     - rabbitmq
 
   modflow-optimization:
-    build: optimization
+    image: inowas/pymodelling:latest
     restart: always
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - ${PYMODELLING_APP_PATH}:/pymodelling
     - ./scripts:/app
-    command: python3 -u /pymodelling/Optimization/main.py
+    - ${OPTIMIZATION_DATA_FOLDER_AT_HOST}:${OPTIMIZATION_DATA_FOLDER_IN_CONTAINER}
+    - ${PYMODELLING_APP_PATH}:/pymodelling
+    command: python -u /pymodelling/Optimization/main.py
     env_file:
     - ./.env
     links:
     - rabbitmq
 
   modflow-read-data:
+    image: inowas/pymodelling:latest
     restart: always
-    image: inowas/docker-modflow
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - ${MODFLOW_DATA_FOLDER}:/data:ro
-    - ${PYMODELLING_APP_PATH}:/pymodelling
     - ./scripts:/app
-    command: /usr/bin/python3 -u /pymodelling/inowas.flopy.read_data.rpc.server.py /data
+    command: python -u /pymodelling/inowas.flopy.read_data.rpc.server.py /data
     env_file:
     - ./.env
     links:
     - rabbitmq
 
   modflow-interpolation:
+    image: inowas/pymodelling:latest
     restart: always
-    image: inowas/docker-modflow
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - ${MODFLOW_DATA_FOLDER}:/data:ro
-    - ${PYMODELLING_APP_PATH}:/pymodelling
     - ./scripts:/app
-    command: /usr/bin/python3 -u /pymodelling/inowas.interpolation.rpc.server.py /data
+    command: python -u /pymodelling/inowas.interpolation.rpc.server.py /data
     env_file:
     - ./.env
     links:
     - rabbitmq
 
   geoprocessing:
+    image: inowas/pymodelling:latest
     restart: always
-    image: inowas/docker-geoprocessing
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - ${MODFLOW_DATA_FOLDER}:/data:ro
-    - ${PYMODELLING_APP_PATH}:/pymodelling
     - ./scripts:/app
-    command: /usr/bin/python3 /pymodelling/inowas.geo_processing.rpc.server.py /data/raster
+    command: python /pymodelling/inowas.geo_processing.rpc.server.py /data/raster
     env_file:
     - ./.env
     links:
