@@ -55,6 +55,16 @@ services:
     - ./scripts:/app
     command: php /var/www/symfony/bin/console inowas:calculation:listener
 
+  optimization-preprocessor:
+    image: inowas/docker-php7-cli-with-geos
+    restart: always
+    entrypoint:
+    - /app/wait_for_rabbitmq.sh
+    volumes:
+    - ${API_PATH}:/var/www/symfony
+    - ./scripts:/app
+    command: php /var/www/symfony/bin/console inowas:optimization:processor
+
   optimization-progress-listener:
     image: inowas/docker-php7-cli
     restart: always
@@ -101,7 +111,7 @@ services:
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
     - ./scripts:/app
-    - ${OPTIMIZATION_DATA_FOLDER_AT_HOST}:${OPTIMIZATION_DATA_FOLDER_IN_CONTAINER}
+    - optimization-data:${OPTIMIZATION_DATA_FOLDER}
     - ${PYMODELLING_APP_PATH}:/pymodelling
     command: python -u /pymodelling/Optimization/main.py
     env_file:
@@ -156,3 +166,6 @@ volumes:
     driver: local
   rabbitmq-data:
     driver: local
+  optimization-data:
+    driver: local
+    name: ${OPTIMIZATION_DATA_VOLUME}
