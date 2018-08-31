@@ -19,15 +19,48 @@ services:
     volumes:
     - postgis-data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
-      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     ports:
     - "5432:5432"
 
   php:
     image: inowas/docker-php7-fpm-with-geos
     restart: always
+    environment:
+      SYMFONY__DATABASE__HOST:      ${DATABASE_HOST}
+      SYMFONY__DATABASE__PORT:      ${DATABASE_PORT}
+      SYMFONY__DATABASE__NAME:      ${DATABASE_NAME}
+      SYMFONY__DATABASE__USER:      ${DATABASE_USER}
+      SYMFONY__DATABASE__PASSWORD:  ${DATABASE_PASSWORD}
+
+      SYMFONY__MAILER__AUTH_MODE:   ${MAILER_AUTH_MODE}
+      SYMFONY__MAILER__ENCRYPTION:  ${MAILER_ENCRYPTION}
+      SYMFONY__MAILER__HOST:        ${MAILER_HOST}
+      SYMFONY__MAILER__PORT:        ${MAILER_PORT}
+      SYMFONY__MAILER__TRANSPORT:   ${MAILER_TRANSPORT}
+      SYMFONY__MAILER__USER:        ${MAILER_USER}
+      SYMFONY__MAILER__PASSWORD:    ${MAILER_PASSWORD}
+
+      SYMFONY__ENV__SECRET:         ${API_SECRET}
+      SYMFONY__BASE_URL:            ${API_BASE_URL}
+      SYMFONY__HOST:                ${API_HOST_URL}
+      SYMFONY__SCHEME:              ${API_URL_SCHEME}
+
+      SYMFONY__RABBITMQ__HOST:      ${RABBITMQ_HOST}
+      SYMFONY__RABBITMQ__PORT:      ${RABBITMQ_PORT}
+      SYMFONY__RABBITMQ__USER:      ${RABBITMQ_USER}
+      SYMFONY__RABBITMQ__PASSWORD:  ${RABBITMQ_PASSWORD}
+      SYMFONY__RABBITMQ__VHOST:     ${RABBITMQ_VIRTUAL_HOST}
+
+      SYMFONY__RABBITMQ__CALCULATION_QUEUE: ${CALCULATION_QUEUE}
+      SYMFONY__RABBITMQ__CALCULATION_FINISHED_QUEUE: ${CALCULATION_FINISHED_QUEUE}
+      SYMFONY__RABBITMQ__OPTIMIZATION_QUEUE: ${OPTIMIZATION_REQUEST_QUEUE}
+      SYMFONY__RABBITMQ__OPTIMIZATION_PROGRESS_QUEUE: ${OPTIMIZATION_RESPONSE_QUEUE}
+      SYMFONY__RABBITMQ__READ_DATA_QUEUE: ${CALCULATION_QUEUE}
+      SYMFONY__RABBITMQ__GEO_PROCESSING_QUEUE: ${GEO_PROCESSING_QUEUE}
+      SYMFONY__RABBITMQ__INTERPOLATION_QUEUE: ${INTERPOLATION_QUEUE}
     volumes:
     - ${API_PATH}:/var/www/symfony
     - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
@@ -37,33 +70,132 @@ services:
   calculation-preprocessor:
     image: inowas/docker-php7-cli-with-geos
     restart: always
+    environment:
+      SYMFONY__DATABASE__HOST:      ${DATABASE_HOST}
+      SYMFONY__DATABASE__PORT:      ${DATABASE_PORT}
+      SYMFONY__DATABASE__NAME:      ${DATABASE_NAME}
+      SYMFONY__DATABASE__USER:      ${DATABASE_USER}
+      SYMFONY__DATABASE__PASSWORD:  ${DATABASE_PASSWORD}
+
+      SYMFONY__MAILER__AUTH_MODE:   ${MAILER_AUTH_MODE}
+      SYMFONY__MAILER__ENCRYPTION:  ${MAILER_ENCRYPTION}
+      SYMFONY__MAILER__HOST:        ${MAILER_HOST}
+      SYMFONY__MAILER__PORT:        ${MAILER_PORT}
+      SYMFONY__MAILER__TRANSPORT:   ${MAILER_TRANSPORT}
+      SYMFONY__MAILER__USER:        ${MAILER_USER}
+      SYMFONY__MAILER__PASSWORD:    ${MAILER_PASSWORD}
+
+      SYMFONY__ENV__SECRET:         ${API_SECRET}
+      SYMFONY__BASE_URL:            ${API_BASE_URL}
+      SYMFONY__HOST:                ${API_HOST_URL}
+      SYMFONY__SCHEME:              ${API_URL_SCHEME}
+
+      SYMFONY__RABBITMQ__HOST:      ${RABBITMQ_HOST}
+      SYMFONY__RABBITMQ__PORT:      ${RABBITMQ_PORT}
+      SYMFONY__RABBITMQ__USER:      ${RABBITMQ_USER}
+      SYMFONY__RABBITMQ__PASSWORD:  ${RABBITMQ_PASSWORD}
+      SYMFONY__RABBITMQ__VHOST:     ${RABBITMQ_VIRTUAL_HOST}
+
+      SYMFONY__RABBITMQ__CALCULATION_QUEUE: ${CALCULATION_QUEUE}
+      SYMFONY__RABBITMQ__CALCULATION_FINISHED_QUEUE: ${CALCULATION_FINISHED_QUEUE}
+      SYMFONY__RABBITMQ__OPTIMIZATION_QUEUE: ${OPTIMIZATION_REQUEST_QUEUE}
+      SYMFONY__RABBITMQ__OPTIMIZATION_PROGRESS_QUEUE: ${OPTIMIZATION_RESPONSE_QUEUE}
+      SYMFONY__RABBITMQ__READ_DATA_QUEUE: ${CALCULATION_QUEUE}
+      SYMFONY__RABBITMQ__GEO_PROCESSING_QUEUE: ${GEO_PROCESSING_QUEUE}
+      SYMFONY__RABBITMQ__INTERPOLATION_QUEUE: ${INTERPOLATION_QUEUE}
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - ${API_PATH}:/var/www/symfony
     - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
     - ./scripts:/app
-    command: php /var/www/symfony/bin/console inowas:calculation:processor
+    command: php /var/www/symfony/bin/console inowas:calculation:processor -e prod
 
   calculation-results-listener:
     image: inowas/docker-php7-cli
     restart: always
+    environment:
+      SYMFONY__DATABASE__HOST:      ${DATABASE_HOST}
+      SYMFONY__DATABASE__PORT:      ${DATABASE_PORT}
+      SYMFONY__DATABASE__NAME:      ${DATABASE_NAME}
+      SYMFONY__DATABASE__USER:      ${DATABASE_USER}
+      SYMFONY__DATABASE__PASSWORD:  ${DATABASE_PASSWORD}
+
+      SYMFONY__MAILER__AUTH_MODE:   ${MAILER_AUTH_MODE}
+      SYMFONY__MAILER__ENCRYPTION:  ${MAILER_ENCRYPTION}
+      SYMFONY__MAILER__HOST:        ${MAILER_HOST}
+      SYMFONY__MAILER__PORT:        ${MAILER_PORT}
+      SYMFONY__MAILER__TRANSPORT:   ${MAILER_TRANSPORT}
+      SYMFONY__MAILER__USER:        ${MAILER_USER}
+      SYMFONY__MAILER__PASSWORD:    ${MAILER_PASSWORD}
+
+      SYMFONY__ENV__SECRET:         ${API_SECRET}
+      SYMFONY__BASE_URL:            ${API_BASE_URL}
+      SYMFONY__HOST:                ${API_HOST_URL}
+      SYMFONY__SCHEME:              ${API_URL_SCHEME}
+
+      SYMFONY__RABBITMQ__HOST:      ${RABBITMQ_HOST}
+      SYMFONY__RABBITMQ__PORT:      ${RABBITMQ_PORT}
+      SYMFONY__RABBITMQ__USER:      ${RABBITMQ_USER}
+      SYMFONY__RABBITMQ__PASSWORD:  ${RABBITMQ_PASSWORD}
+      SYMFONY__RABBITMQ__VHOST:     ${RABBITMQ_VIRTUAL_HOST}
+
+      SYMFONY__RABBITMQ__CALCULATION_QUEUE: ${CALCULATION_QUEUE}
+      SYMFONY__RABBITMQ__CALCULATION_FINISHED_QUEUE: ${CALCULATION_FINISHED_QUEUE}
+      SYMFONY__RABBITMQ__OPTIMIZATION_QUEUE: ${OPTIMIZATION_REQUEST_QUEUE}
+      SYMFONY__RABBITMQ__OPTIMIZATION_PROGRESS_QUEUE: ${OPTIMIZATION_RESPONSE_QUEUE}
+      SYMFONY__RABBITMQ__READ_DATA_QUEUE: ${CALCULATION_QUEUE}
+      SYMFONY__RABBITMQ__GEO_PROCESSING_QUEUE: ${GEO_PROCESSING_QUEUE}
+      SYMFONY__RABBITMQ__INTERPOLATION_QUEUE: ${INTERPOLATION_QUEUE}
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - ${API_PATH}:/var/www/symfony
     - ./scripts:/app
-    command: php /var/www/symfony/bin/console inowas:calculation:listener
+    command: php /var/www/symfony/bin/console inowas:calculation:listener -e prod
 
   optimization-progress-listener:
     image: inowas/docker-php7-cli
     restart: always
+    environment:
+      SYMFONY__DATABASE__HOST:      ${DATABASE_HOST}
+      SYMFONY__DATABASE__PORT:      ${DATABASE_PORT}
+      SYMFONY__DATABASE__NAME:      ${DATABASE_NAME}
+      SYMFONY__DATABASE__USER:      ${DATABASE_USER}
+      SYMFONY__DATABASE__PASSWORD:  ${DATABASE_PASSWORD}
+
+      SYMFONY__MAILER__AUTH_MODE:   ${MAILER_AUTH_MODE}
+      SYMFONY__MAILER__ENCRYPTION:  ${MAILER_ENCRYPTION}
+      SYMFONY__MAILER__HOST:        ${MAILER_HOST}
+      SYMFONY__MAILER__PORT:        ${MAILER_PORT}
+      SYMFONY__MAILER__TRANSPORT:   ${MAILER_TRANSPORT}
+      SYMFONY__MAILER__USER:        ${MAILER_USER}
+      SYMFONY__MAILER__PASSWORD:    ${MAILER_PASSWORD}
+
+      SYMFONY__ENV__SECRET:         ${API_SECRET}
+      SYMFONY__BASE_URL:            ${API_BASE_URL}
+      SYMFONY__HOST:                ${API_HOST_URL}
+      SYMFONY__SCHEME:              ${API_URL_SCHEME}
+
+      SYMFONY__RABBITMQ__HOST:      ${RABBITMQ_HOST}
+      SYMFONY__RABBITMQ__PORT:      ${RABBITMQ_PORT}
+      SYMFONY__RABBITMQ__USER:      ${RABBITMQ_USER}
+      SYMFONY__RABBITMQ__PASSWORD:  ${RABBITMQ_PASSWORD}
+      SYMFONY__RABBITMQ__VHOST:     ${RABBITMQ_VIRTUAL_HOST}
+
+      SYMFONY__RABBITMQ__CALCULATION_QUEUE: ${CALCULATION_QUEUE}
+      SYMFONY__RABBITMQ__CALCULATION_FINISHED_QUEUE: ${CALCULATION_FINISHED_QUEUE}
+      SYMFONY__RABBITMQ__OPTIMIZATION_QUEUE: ${OPTIMIZATION_REQUEST_QUEUE}
+      SYMFONY__RABBITMQ__OPTIMIZATION_PROGRESS_QUEUE: ${OPTIMIZATION_RESPONSE_QUEUE}
+      SYMFONY__RABBITMQ__READ_DATA_QUEUE: ${CALCULATION_QUEUE}
+      SYMFONY__RABBITMQ__GEO_PROCESSING_QUEUE: ${GEO_PROCESSING_QUEUE}
+      SYMFONY__RABBITMQ__INTERPOLATION_QUEUE: ${INTERPOLATION_QUEUE}
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - ${API_PATH}:/var/www/symfony
     - ./scripts:/app
-    command: php /var/www/symfony/bin/console inowas:optimization:listener
+    command: php /var/www/symfony/bin/console inowas:optimization:listener -e prod
 
   nginx:
     image: inowas/docker-nginx
@@ -96,7 +228,6 @@ services:
     - /var/run/docker.sock:/var/run/docker.sock
     - ./scripts:/app
     - optimization-data:${OPTIMIZATION_DATA_FOLDER}
-    - ${PYMODELLING_APP_PATH}:/pymodelling
     command: python -u /pymodelling/Optimization/main.py
     env_file:
     - ./.env
