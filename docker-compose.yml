@@ -47,6 +47,8 @@ services:
       SYMFONY__BASE_URL:            ${API_BASE_URL}
       SYMFONY__HOST:                ${API_HOST_URL}
       SYMFONY__SCHEME:              ${API_URL_SCHEME}
+      SYMFONY__ENV__DATA_FOLDER:    ${API_DATA_FOLDER}
+      SYMFONY__ENV__TEMP_FOLDER:    ${API_TEMP_FOLDER}
 
       SYMFONY__RABBITMQ__HOST:      ${RABBITMQ_HOST}
       SYMFONY__RABBITMQ__PORT:      ${RABBITMQ_PORT}
@@ -63,7 +65,7 @@ services:
       SYMFONY__RABBITMQ__INTERPOLATION_QUEUE: ${INTERPOLATION_QUEUE}
     volumes:
     - ${API_PATH}:/var/www/symfony
-    - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
+    - api-data:${API_DATA_FOLDER}
     - ./logs/php:/var/www/symfony/var/logs
 
   # amqp-listener on application
@@ -89,6 +91,8 @@ services:
       SYMFONY__BASE_URL:            ${API_BASE_URL}
       SYMFONY__HOST:                ${API_HOST_URL}
       SYMFONY__SCHEME:              ${API_URL_SCHEME}
+      SYMFONY__ENV__DATA_FOLDER:    ${API_DATA_FOLDER}
+      SYMFONY__ENV__TEMP_FOLDER:    ${API_TEMP_FOLDER}
 
       SYMFONY__RABBITMQ__HOST:      ${RABBITMQ_HOST}
       SYMFONY__RABBITMQ__PORT:      ${RABBITMQ_PORT}
@@ -107,7 +111,7 @@ services:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - ${API_PATH}:/var/www/symfony
-    - ${MODFLOW_DATA_FOLDER}:/var/www/symfony/var/data
+    - api-data:${API_DATA_FOLDER}
     - ./scripts:/app
     command: php /var/www/symfony/bin/console inowas:calculation:processor -e prod
 
@@ -133,6 +137,8 @@ services:
       SYMFONY__BASE_URL:            ${API_BASE_URL}
       SYMFONY__HOST:                ${API_HOST_URL}
       SYMFONY__SCHEME:              ${API_URL_SCHEME}
+      SYMFONY__ENV__DATA_FOLDER:    ${API_DATA_FOLDER}
+      SYMFONY__ENV__TEMP_FOLDER:    ${API_TEMP_FOLDER}
 
       SYMFONY__RABBITMQ__HOST:      ${RABBITMQ_HOST}
       SYMFONY__RABBITMQ__PORT:      ${RABBITMQ_PORT}
@@ -176,6 +182,8 @@ services:
       SYMFONY__BASE_URL:            ${API_BASE_URL}
       SYMFONY__HOST:                ${API_HOST_URL}
       SYMFONY__SCHEME:              ${API_URL_SCHEME}
+      SYMFONY__ENV__DATA_FOLDER:    ${API_DATA_FOLDER}
+      SYMFONY__ENV__TEMP_FOLDER:    ${API_TEMP_FOLDER}
 
       SYMFONY__RABBITMQ__HOST:      ${RABBITMQ_HOST}
       SYMFONY__RABBITMQ__PORT:      ${RABBITMQ_PORT}
@@ -211,7 +219,7 @@ services:
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
-    - ${MODFLOW_DATA_FOLDER}:/data
+    - modflow-data:/data
     - ./scripts:/app
     command: python -u /pymodelling/inowas.flopy.calculation.server.py /data
     env_file:
@@ -240,7 +248,7 @@ services:
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
-    - ${MODFLOW_DATA_FOLDER}:/data:ro
+    - modflow-data:/data:ro
     - ./scripts:/app
     command: python -u /pymodelling/inowas.flopy.read_data.rpc.server.py /data
     env_file:
@@ -254,7 +262,7 @@ services:
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
-    - ${MODFLOW_DATA_FOLDER}:/data:ro
+    - interpolation-data:/data:ro
     - ./scripts:/app
     command: python -u /pymodelling/inowas.interpolation.rpc.server.py /data
     env_file:
@@ -268,19 +276,27 @@ services:
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
-    - ${MODFLOW_DATA_FOLDER}:/data:ro
+    - geoprocessing-data:/data
     - ./scripts:/app
-    command: python3 -u /InowasGeoProcessing/inowas.geo_processing.rpc.server.py /data/raster
+    command: python3 -u /InowasGeoProcessing/inowas.geo_processing.rpc.server.py /data
     env_file:
     - ./.env
     links:
     - rabbitmq
 
 volumes:
-  postgis-data:
+  api-data:
     driver: local
-  rabbitmq-data:
+  geoprocessing-data:
+    driver: local
+  interpolation-data:
+    driver: local
+  modflow-data:
     driver: local
   optimization-data:
     driver: local
     name: ${OPTIMIZATION_DATA_VOLUME}
+  postgis-data:
+    driver: local
+  rabbitmq-data:
+    driver: local
