@@ -54,7 +54,11 @@ docker-compose down -v
 docker-compose up -d --no-recreate
 docker-compose ps
 docker-compose exec php composer install --no-interaction
+
+set +e
 docker-compose exec php bash ./build/setFolderPermissions.sh
+
+set -e
 docker-compose exec php php ./bin/console cache:clear -e prod
 docker-compose exec php php ./bin/console cache:clear -e dev
 docker-compose exec php php ./bin/console doctrine:database:drop --force --env=prod --if-exists
