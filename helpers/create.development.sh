@@ -14,7 +14,8 @@ fi
 
 echo "Clone API-Source code"
 git clone -b master --depth 1  --recursive https://github.com/inowas/inowas_api.git api
-mv ./api/users.dist.json ./api/users.json
+cp ./api/users.dist.json ./api/users.json
+cp ./api/app/config/parameters.yml.dist ./api/app/config/parameters.yml
 
 echo "Clone APP-Source code"
 git clone -b master https://github.com/inowas/inowas-dss-client.git app
