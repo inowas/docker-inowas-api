@@ -24,7 +24,7 @@ fi
 
 echo "Checkout infrastructure master-branch"
 cd ${DOCKER_FOLDER}
-git checkout origin/master
+git checkout master && git pull origin/master
 
 
 echo "Checkout API-Source code from master-branch"
@@ -36,7 +36,7 @@ then
 fi
 
 cd ${API_FOLDER}
-git checkout origin/master
+git checkout master && git pull origin/master
 git submodule update
 
 echo "Checkout APP-Source code from dev-branch"
