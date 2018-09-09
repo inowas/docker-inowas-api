@@ -48,19 +48,17 @@ then
 fi
 
 cd ${APP_FOLDER}
-git checkout origin/master
-
+git checkout master && git pull origin/master
 
 cd ${DOCKER_FOLDER}
-docker-compose down -v
-docker-compose up -d --no-recreate
+docker-compose -f app.yml down -v
+docker-compose -f docker-compose.yml down -v
+docker-compose -f app.yml up -d --no-recreate --build
+docker-compose -f docker-compose.yml up -d --no-recreate
 docker-compose ps
-docker-compose exec php composer install --no-interaction
 
+docker-compose exec php composer install --no-interaction
 set +e
 docker-compose exec php bash ./build/setFolderPermissions.sh
 docker-compose exec php bash ./build/setDataFolderPermissions.sh ${API_DATA_FOLDER}
 set -e
-
-docker-compose exec php php ./bin/console cache:clear -e prod
-docker-compose exec php php ./bin/console cache:clear -e dev
