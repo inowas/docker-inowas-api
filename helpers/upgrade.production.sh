@@ -51,8 +51,8 @@ cd ${APP_FOLDER}
 git checkout master && git pull
 
 cd ${DOCKER_FOLDER}
-docker-compose -f app.yml down -v
-docker-compose -f docker-compose.yml down -v
+docker-compose -f app.yml down
+docker-compose -f docker-compose.yml down
 docker-compose -f app.yml up -d --no-recreate --build
 docker-compose -f docker-compose.yml up -d --no-recreate
 docker-compose ps
