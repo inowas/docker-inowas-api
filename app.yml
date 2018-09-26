@@ -9,7 +9,7 @@ services:
     labels:
     - "traefik.docker.network=${TRAEFIK_NETWORK_NAME}"
     - "traefik.enable=true"
-    - "traefik.wiki.frontend.rule=${HOST_URL}"
+    - "traefik.wiki.frontend.rule=Host: ${HOST_URL}"
     - "traefik.wiki.port=5000"
     - "traefik.wiki.protocol=http"
     networks:
