@@ -22,8 +22,6 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
-    ports:
-    - "5432:5432"
 
   php:
     image: inowas/docker-php7-fpm-with-geos
@@ -208,10 +206,19 @@ services:
   nginx:
     image: inowas/docker-nginx
     restart: always
-    ports:
-    - ${API_HTTP_PORT}:80
+    expose:
+    - 80
     volumes_from:
     - php
+    networks:
+    - web
+    - default
+    labels:
+    - "traefik.docker.network=${TRAEFIK_NETWORK_NAME}"
+    - "traefik.enable=true"
+    - "traefik.frontend.rule=Host: api.${HOST_URL}"
+    - "traefik.port=80"
+    - "traefik.protocol=http"
 
   modflow-calculation:
     image: inowas/pymodelling:latest
@@ -283,6 +290,11 @@ services:
     - ./.env
     links:
     - rabbitmq
+
+networks:
+  web:
+    external:
+      name: ${TRAEFIK_NETWORK_NAME}
 
 volumes:
   api-data:
