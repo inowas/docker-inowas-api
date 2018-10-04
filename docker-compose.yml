@@ -65,6 +65,10 @@ services:
     - ${API_PATH}:/var/www/symfony
     - api-data:${API_DATA_FOLDER}
     - ./logs/php:/var/www/symfony/var/logs
+    command: >
+      bash -c "./build/setDataFolderPermissions.sh ${API_DATA_FOLDER}
+      && php -v
+      && php-fpm"
 
   # amqp-listener on application
   calculation-preprocessor:
