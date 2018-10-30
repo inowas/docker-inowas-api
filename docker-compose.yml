@@ -22,6 +22,8 @@ services:
       POSTGRES_USER: ${DATABASE_USER}
       POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
       POSTGRES_DB: ${DATABASE_NAME}
+    ports:
+    -  5432:5432
 
   php:
     image: inowas/docker-php7-fpm-with-geos
@@ -209,6 +211,8 @@ services:
     restart: always
     expose:
     - 80
+    ports:
+    - 8001:80
     volumes_from:
     - php
     networks:
