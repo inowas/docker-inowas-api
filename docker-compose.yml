@@ -276,9 +276,9 @@ services:
     entrypoint:
     - /app/wait_for_rabbitmq.sh
     volumes:
-    - geoprocessing-data:/data
+    - api-data:/data:ro
     - ./scripts:/app
-    command: python3 -u /InowasGeoProcessing/inowas.geo_processing.rpc.server.py /data
+    command: python3 -u /InowasGeoProcessing/inowas.geo_processing.rpc.server.py /data/raster
     env_file:
     - ./.env
 
@@ -289,8 +289,6 @@ networks:
 
 volumes:
   api-data:
-    driver: local
-  geoprocessing-data:
     driver: local
   interpolation-data:
     driver: local
