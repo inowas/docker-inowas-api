@@ -10,7 +10,7 @@ echo RABBITMQ_PASSWORD: ${RABBITMQ_PASSWORD}
 echo RABBITMQ_VIRTUAL_HOST: ${RABBITMQ_VIRTUAL_HOST}
 
 # Create Default RabbitMQ setup
-( sleep 10 ; \
+( sleep 30 ; \
 
 # Create users
 rabbitmqctl add_user ${RABBITMQ_USER} ${RABBITMQ_PASSWORD}
