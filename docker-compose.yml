@@ -113,6 +113,8 @@ services:
     - api-data:${API_DATA_FOLDER}
     - ./scripts:/app
     command: php /var/www/symfony/bin/console inowas:calculation:processor -e prod
+    env_file:
+    - ./.env
 
   calculation-results-listener:
     image: inowas/docker-php7-cli
@@ -158,6 +160,8 @@ services:
     - ${API_PATH}:/var/www/symfony
     - ./scripts:/app
     command: php /var/www/symfony/bin/console inowas:calculation:listener -e prod
+    env_file:
+    - ./.env
 
   optimization-progress-listener:
     image: inowas/docker-php7-cli
@@ -203,6 +207,8 @@ services:
     - ${API_PATH}:/var/www/symfony
     - ./scripts:/app
     command: php /var/www/symfony/bin/console inowas:optimization:listener -e prod
+    env_file:
+    - ./.env
 
   nginx:
     image: inowas/docker-nginx
@@ -240,7 +246,7 @@ services:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - ./scripts:/app
+    - ./scripts/app
     - optimization-data:${OPTIMIZATION_DATA_FOLDER}
     command: python -u /pymodelling/Optimization/main.py
     env_file:

@@ -3,7 +3,7 @@ set -e
 
 echo ">> Waiting for RabbitMQ to start"
 WAIT=0
-while ! nc -z rabbitmq 5672; do
+while ! nc -z $RABBITMQ_HOST $RABBITMQ_PORT; do
   sleep 1
   echo "   RabbitMQ not ready yet"
   WAIT=$(($WAIT + 1))
@@ -19,3 +19,4 @@ echo ">> Wait for another 10 seconds until rabbitMQ-setup is really finished and
 sleep 10
 
 "$@"
+
