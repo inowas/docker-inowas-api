@@ -246,7 +246,7 @@ services:
     - /app/wait_for_rabbitmq.sh
     volumes:
     - /var/run/docker.sock:/var/run/docker.sock
-    - ./scripts/app
+    - ./scripts:/app
     - optimization-data:${OPTIMIZATION_DATA_FOLDER}
     command: python -u /pymodelling/Optimization/main.py
     env_file:
